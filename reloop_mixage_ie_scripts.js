@@ -42,12 +42,14 @@ MixageIE.ledMap = {
     '[Channel1]': {
 		'cue_indicator': 0x0A,
         'cue_default': 0x0B,
+				'loop_enabled': 0x05,
         'play_indicator': 0x0C,
 		'pfl': 0x0E
     },
     '[Channel2]': {
 		'cue_indicator': 0x18,
 		'cue_default': 0x19,
+		'loop_enabled': 0x13,
         'play_indicator': 0x1A,
 		'pfl': 0x1C
     }
@@ -57,6 +59,7 @@ MixageIE.ledMap = {
 MixageIE.connectionMap = {
 	'cue_indicator': 'MixageIE.toggleLED',
 	'cue_default': 'MixageIE.toggleLED',
+	'loop_enabled': 'MixageIE.toggleLED',
     'play_indicator': 'MixageIE.handlePlay',
 	'pfl': 'MixageIE.toggleLED'
 };
@@ -236,4 +239,15 @@ MixageIE.handleEffectDryWet = function (channel, control, value, status, group) 
 	var controlString = '[EffectRack1_EffectUnit'+unitNr+']';
     var value = engine.getValue(controlString, 'mix');
 	engine.setValue(controlString, 'mix', value + diff);
+}
+
+MixageIE.resizeLoop = function (channel, control, value, status, group)
+{
+	var beatloop_size = engine.getValue(group, 'beatloop_size');
+	engine.setValue(group, 'beatloop_size', value === 0x41 ? beatloop_size * 2 : beatloop_size / 2);
+}
+
+MixageIE.beatmove = function (channel, control, value, status, group)
+{
+	engine.setValue(group, 'loop_move', value === 0x41 ? 1 : -1);
 }
